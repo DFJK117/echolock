@@ -8,6 +8,11 @@ import openfl.text.TextField;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
 import openfl.Lib;
+import openfl.media.Sound;
+import openfl.media.SoundChannel;
+import openfl.net.FileReference;
+import openfl.net.FileType;
+import haxe.Json;
 
 
 enum GameState {
@@ -61,6 +66,14 @@ class Game extends Sprite {
 	var prev2:Bool;
 	var prev3:Bool;
 	var prev4:Bool;
+var prevComma:Bool;
+var prevPeriod:Bool;
+var prevOpenBr:Bool;
+var prevCloseBr:Bool;
+var prevO:Bool;
+var prevP:Bool;
+var prevL:Bool;
+var prevG:Bool;
 
 	// ===== 编辑器 =====
 	var editorNotes:Array<Note>;
@@ -101,6 +114,8 @@ class Game extends Sprite {
 		prevN = false; prevM = false; prevEnter = false;
 		prevSpace = false; prevE = false; prevEsc = false; prevR = false;
 		prev1 = false; prev2 = false; prev3 = false; prev4 = false;
+		prevComma = false; prevPeriod = false; prevOpenBr = false; prevCloseBr = false;
+		prevO = false; prevP = false; prevL = false; prevG = false;
 
 		keys = new KeyState();
 		effKeys = new KeyState();
@@ -261,6 +276,14 @@ class Game extends Sprite {
 	var twoHeld:Bool = false;
 	var threeHeld:Bool = false;
 	var fourHeld:Bool = false;
+var commaHeld:Bool = false;
+var periodHeld:Bool = false;
+var openBrHeld:Bool = false;
+var closeBrHeld:Bool = false;
+var oHeld:Bool = false;
+var pHeld:Bool = false;
+var lHeld:Bool = false;
+var gHeld:Bool = false;
 	var cleared:Bool = false;
 
 	function onKeyDown(e:KeyboardEvent):Void {
@@ -360,6 +383,17 @@ class Game extends Sprite {
 		prevEnter = enterHeld; prevSpace = spaceHeld; prevE = eHeld;
 		prevEsc = escHeld; prevR = rHeld;
 		prev1 = oneHeld; prev2 = twoHeld; prev3 = threeHeld; prev4 = fourHeld;
+
+		var commaPress = commaHeld && !prevComma;
+		var periodPress = periodHeld && !prevPeriod;
+		var openBrPress = openBrHeld && !prevOpenBr;
+		var closeBrPress = closeBrHeld && !prevCloseBr;
+		var oPress = oHeld && !prevO;
+		var pPress = pHeld && !prevP;
+		var lPress = lHeld && !prevL;
+		var gPress = gHeld && !prevG;
+		prevComma = commaHeld; prevPeriod = periodHeld; prevOpenBr = openBrHeld; prevCloseBr = closeBrHeld;
+		prevO = oHeld; prevP = pHeld; prevL = lHeld; prevG = gHeld;
 
 		switch (state) {
 			case MENU:
@@ -579,13 +613,35 @@ class Game extends Sprite {
 	}
 
 	function updateEditor(dt:Float, clicked:Bool, spacePress:Bool, rPress:Bool,
-		escPress:Bool, onePress:Bool, twoPress:Bool, threePress:Bool, fourPress:Bool):Void {
+		escPress:Bool, onePress:Bool, twoPress:Bool, threePress:Bool, fourPress:Bool,
+		commaPress:Bool, periodPress:Bool, openBrPress:Bool, closeBrPress:Bool,
+		oPress:Bool, pPress:Bool, lPress:Bool, gPress:Bool):Void {
 
 		// 选键
 		if (onePress) editorSelectedKey = 0;
 		if (twoPress) editorSelectedKey = 1;
 		if (threePress) editorSelectedKey = 2;
 		if (fourPress) editorSelectedKey = 3;
+
+		// BPM 调节 [ ]
+		if (openBrPress) { bpm -= 5; beatInterval = 60000 / bpm; }
+		if (closeBrPress) { bpm += 5; beatInterval = 60000 / bpm; }
+
+		// 时间步进 , .
+		if (commaPress) editorTime = Std.max(0, editorTime - Std.int(beatInterval / 4));
+		if (periodPress) editorTime += Std.int(beatInterval / 4);
+
+		// 停止音乐 G
+		if (gPress && musicChannel != null) { musicChannel.stop(); musicChannel = null; }
+
+		// 导入音乐 O
+		if (oPress) importMusic();
+
+		// 保存 JSON P
+		if (pPress) saveChartJSON();
+
+		// 加载 JSON L
+		if (lPress) loadChartJSON();
 
 		// 播放/暂停
 		if (spacePress) {
@@ -747,5 +803,53 @@ class Game extends Sprite {
 				particles.splice(i, 1);
 			}
 		}
+	}
+
+	// ==================== 音乐 & JSON ====================
+
+	function importMusic():Void {
+		fileRef = new FileReference();
+		fileRef.addEventListener(Event.COMPLETE, onMusicLoaded);
+		fileRef.browse([new FileType("Audio", ["mp3", "ogg", "aac", "m4a"])]);
+	}
+
+	function onMusicLoaded(e:Event):Void {
+		musicName = fileRef.name;
+		music = new Sound();
+		music.load(fileRef.data);
+		if (musicChannel != null) musicChannel.stop();
+		musicChannel = music.play();
+	}
+
+	function saveChartJSON():Void {
+		var data = { bpm: bpm, music: musicName, notes: [] };
+		for (n in editorNotes) {
+			data.notes.push({ time: n.time, angle: n.angle, dist: n.distance, key: n.keyIndex });
+		}
+		var json = Json.stringify(data);
+		var fr = new FileReference();
+		fr.save(json, "chart.json");
+	}
+
+	function loadChartJSON():Void {
+		fileRef = new FileReference();
+		fileRef.addEventListener(Event.COMPLETE, onJSONLoaded);
+		fileRef.browse([new FileType("JSON", ["json"])]);
+	}
+
+	function onJSONLoaded(e:Event):Void {
+		var text = fileRef.data.toString();
+		var data = Json.parse(text);
+		bpm = data.bpm;
+		beatInterval = 60000 / bpm;
+		musicName = data.music;
+		editorNotes = [];
+		for (n in data.notes) {
+			editorNotes.push(new Note(Std.int(n.time), n.angle, n.dist, Std.int(n.key)));
+		}
+		editorNotes.sort(function(a, b) return a.time - b.time);
+		editorTime = 0;
+		editorNextNote = 0;
+		clearRingsAndSignals();
 	}
 }
