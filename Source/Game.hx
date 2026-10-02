@@ -823,11 +823,14 @@ var gHeld:Bool = false;
 	function onMusicLoaded(e:Event):Void {
 		musicName = fileRef.name;
 		music = new Sound();
-		music.load(fileRef.data);
 		if (musicChannel != null) musicChannel.stop();
+		#if !html5
+		var req = new openfl.net.URLRequest();
+		req.data = fileRef.data;
+		music.load(req);
 		musicChannel = music.play();
+		#end
 	}
-
 	function saveChartJSON():Void {
 		var data = { bpm: bpm, music: musicName, notes: [] };
 		for (n in editorNotes) {
