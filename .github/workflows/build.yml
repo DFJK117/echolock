@@ -131,7 +131,7 @@ jobs:
       - name: Configure Lime for Android
         run: |
           export ANDROID_NDK_HOME="$ANDROID_SDK_ROOT/ndk/25.2.9519653"
-          haxelib run lime config android "$ANDROID_SDK_ROOT" "$ANDROID_NDK_HOME"
+          haxelib run lime setup android "$ANDROID_SDK_ROOT" "$ANDROID_NDK_HOME"
 
       - name: Build Android Debug APK
         run: |
