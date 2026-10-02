@@ -9,8 +9,8 @@
 
 	<assets path="assets" rename="assets" include="*.json" />
 
-	<window width="960" height="960" fps="60" background="0x0a0e1a" />
-	<window if="html5" resizable="false" />
+	<window width="1920" height="1080" fps="60" background="0x0a0e1a" resizable="true" />
+	<window if="html5" resizable="true" />
 
 	<!-- 安卓：竖屏，全屏，保留屏幕常亮 -->
 	<window if="android" orientation="portrait" />
