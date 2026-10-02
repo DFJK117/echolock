@@ -1,4 +1,4 @@
-name: Build EchoLock (Windows / HTML5 / Android)
+name: Build EchoLock (Windows / Mac / HTML5 / Android)
 
 on:
   push:
@@ -26,7 +26,7 @@ jobs:
           haxelib install lime --always
           haxelib run lime setup
 
-      - name: Build Windows (64-bit Release)
+      - name: Build Windows
         shell: cmd
         run: haxelib run lime build windows
 
@@ -35,6 +35,34 @@ jobs:
         with:
           name: EchoLock-Windows
           path: Export/windows/bin/
+
+  # ============================================================
+  # Mac
+  # ============================================================
+  mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Haxe 4.3.4
+        uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: 4.3.4
+
+      - name: Install OpenFL + Lime
+        run: |
+          haxelib install openfl --always
+          haxelib install lime --always
+          haxelib run lime setup
+
+      - name: Build Mac
+        run: haxelib run lime build mac
+
+      - name: Upload Mac artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: EchoLock-Mac
+          path: Export/mac/bin/
 
   # ============================================================
   # HTML5
@@ -81,11 +109,13 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install Android NDK + Platform
+      - name: Accept Android licenses
+        run: yes | sdkmanager --licenses || true
+
+      - name: Install Android packages
         run: |
-          echo "y" | sdkmanager "ndk;26.1.10909125"
-          echo "y" | sdkmanager "platforms;android-34"
-          echo "y" | sdkmanager "build-tools;34.0.0"
+          sdkmanager "platforms;android-34" "build-tools;34.0.0" "ndk;25.2.9519653"
+        continue-on-error: true
 
       - name: Setup Haxe 4.3.4
         uses: krdlab/setup-haxe@v1
@@ -100,21 +130,20 @@ jobs:
 
       - name: Configure Lime for Android
         run: |
-          export ANDROID_NDK_HOME="$ANDROID_SDK_ROOT/ndk/26.1.10909125"
-          echo "y" | haxelib run lime config android "$ANDROID_SDK_ROOT" "$ANDROID_NDK_HOME" || true
+          export ANDROID_NDK_HOME="$ANDROID_SDK_ROOT/ndk/25.2.9519653"
+          haxelib run lime config android "$ANDROID_SDK_ROOT" "$ANDROID_NDK_HOME"
 
       - name: Build Android Debug APK
         run: |
-          export ANDROID_NDK_HOME="$ANDROID_SDK_ROOT/ndk/26.1.10909125"
+          export ANDROID_NDK_HOME="$ANDROID_SDK_ROOT/ndk/25.2.9519653"
           haxelib run lime build android -debug
 
       - name: Find APK
-        run: find Export/android -name "*.apk" -type f 2>/dev/null || echo "No APK found, listing export dir:" && ls -R Export/android/ 2>/dev/null || true
+        run: find Export/android -name "*.apk" -type f 2>/dev/null || echo "No APK"
 
       - name: Upload Android artifact
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: EchoLock-Android
-          path: |
-            Export/android/**/*.apk
-            Export/android/bin/
+          path: Export/android/**/*.apk
