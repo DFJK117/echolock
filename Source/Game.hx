@@ -8,7 +8,7 @@ import openfl.text.TextField;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
 import openfl.Lib;
-import openfl.system.System;
+
 
 enum GameState {
 	MENU;
@@ -139,14 +139,12 @@ class Game extends Sprite {
 	// ==================== 初始化 ====================
 
 	function detectMobile():Bool {
-		var os = System.osName.toLowerCase();
-		var mobileOS = os.indexOf("android") >= 0 || os.indexOf("ios") >= 0
-			|| os.indexOf("iphone") >= 0 || os.indexOf("ipad") >= 0
-			|| os.indexOf("harmony") >= 0;
-		#if html5
-		return mobileOS || Lib.current.stage.stageWidth < 640;
+		#if android
+		return true;
+		#elseif html5
+		return Lib.current.stage.stageWidth < 640;
 		#else
-		return mobileOS;
+		return false;
 		#end
 	}
 
@@ -496,7 +494,7 @@ class Game extends Sprite {
 		addChild(sig);
 
 		// 环在信号点之前生成，确保能扫到
-		var ringSpawn = note.time - dist / RING_SPEED;
+		var ringSpawn = Std.int(note.time - dist / RING_SPEED);
 		var ring = new SonarRing(ringSpawn, RADAR_RADIUS, RING_SPEED);
 		ring.x = CENTER_X;
 		ring.y = CENTER_Y;
