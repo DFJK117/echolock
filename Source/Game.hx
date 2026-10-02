@@ -11,7 +11,8 @@ import openfl.Lib;
 import openfl.media.Sound;
 import openfl.media.SoundChannel;
 import openfl.net.FileReference;
-import openfl.net.FileType;
+import openfl.net.URLRequest;
+import openfl.net.FileFilter;
 import haxe.Json;
 
 
@@ -634,7 +635,7 @@ var gHeld:Bool = false;
 		if (closeBrPress) { bpm += 5; beatInterval = 60000 / bpm; }
 
 		// 时间步进 , .
-		if (commaPress) editorTime = Std.max(0, editorTime - Std.int(beatInterval / 4));
+		if (commaPress) editorTime = Math.max(0, editorTime - Std.int(beatInterval / 4));
 		if (periodPress) editorTime += Std.int(beatInterval / 4);
 
 		// 停止音乐 G
@@ -816,7 +817,7 @@ var gHeld:Bool = false;
 	function importMusic():Void {
 		fileRef = new FileReference();
 		fileRef.addEventListener(Event.COMPLETE, onMusicLoaded);
-		fileRef.browse([new FileType("Audio", ["mp3", "ogg", "aac", "m4a"])]);
+		fileRef.browse([new FileFilter("Audio", "mp3,ogg,aac,m4a")]);
 	}
 
 	function onMusicLoaded(e:Event):Void {
@@ -840,7 +841,7 @@ var gHeld:Bool = false;
 	function loadChartJSON():Void {
 		fileRef = new FileReference();
 		fileRef.addEventListener(Event.COMPLETE, onJSONLoaded);
-		fileRef.browse([new FileType("JSON", ["json"])]);
+		fileRef.browse([new FileFilter("JSON", "json")]);
 	}
 
 	function onJSONLoaded(e:Event):Void {
