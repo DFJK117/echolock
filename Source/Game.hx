@@ -8,6 +8,7 @@ import openfl.text.TextField;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
 import openfl.Lib;
+import openfl.events.StageAlign;
 import openfl.media.Sound;
 import openfl.media.SoundChannel;
 import openfl.net.FileReference;
@@ -169,7 +170,7 @@ var prevG:Bool;
 	}
 
 	function setupUI():Void {
-		var fmt = new TextFormat("Consolas", 22, 0xe0f7fa, true);
+		var fmt = new TextFormat("Consolas", 32, 0xe0f7fa, true);
 
 		scoreText = new TextField();
 		scoreText.x = 20; scoreText.y = 16;
@@ -187,7 +188,7 @@ var prevG:Bool;
 		comboText.visible = false;
 		addChild(comboText);
 
-		var jFmt = new TextFormat("Consolas", 38, 0xffffff, true);
+		var jFmt = new TextFormat("Consolas", 80, 0xffffff, true);
 		jFmt.align = TextFormatAlign.CENTER;
 		judgeText = new TextField();
 		judgeText.x = CENTER_X - 160; judgeText.y = CENTER_Y + RADAR_RADIUS + 10;
@@ -197,7 +198,7 @@ var prevG:Bool;
 		judgeText.selectable = false;
 		addChild(judgeText);
 
-		var titleFmt = new TextFormat("Consolas", 56, 0x00e5ff, true);
+		var titleFmt = new TextFormat("Consolas", 80, 0x00e5ff, true);
 		titleFmt.align = TextFormatAlign.CENTER;
 		menuTitle = new TextField();
 		menuTitle.x = 0; menuTitle.y = 200;
@@ -207,7 +208,7 @@ var prevG:Bool;
 		menuTitle.selectable = false;
 		addChild(menuTitle);
 
-		var hintFmt = new TextFormat("Consolas", 20, 0xb0bec5, false);
+		var hintFmt = new TextFormat("Consolas", 28, 0xb0bec5, false);
 		hintFmt.align = TextFormatAlign.CENTER;
 		menuHint = new TextField();
 		menuHint.x = 0; menuHint.y = 340;
@@ -217,7 +218,7 @@ var prevG:Bool;
 		menuHint.selectable = false;
 		addChild(menuHint);
 
-		var eFmt = new TextFormat("Consolas", 16, 0xb0bec5, false);
+		var eFmt = new TextFormat("Consolas", 24, 0xb0bec5, false);
 		editorInfo = new TextField();
 		editorInfo.x = 20; editorInfo.y = 880;
 		editorInfo.width = 920; editorInfo.height = 60;
