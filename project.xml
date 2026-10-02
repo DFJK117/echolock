@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	<meta title="EchoLock" package="com.echolock.game" version="1.0.0" company="EchoLock" />
+	<app main="Main" path="Export" file="EchoLock" />
+
+	<source path="Source" />
+
+	<haxelib name="openfl" />
+
+	<assets path="assets" rename="assets" include="*.json" />
+
+	<window width="960" height="960" fps="60" background="0x0a0e1a" />
+	<window if="html5" resizable="false" />
+
+	<!-- 安卓：竖屏，全屏，保留屏幕常亮 -->
+	<window if="android" orientation="portrait" />
+	<window if="android" fullscreen="true" />
+	<android permission="WAKE_LOCK" if="android" />
+</project>

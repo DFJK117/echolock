@@ -1,0 +1,6 @@
+Export/
+*.hxcache
+*.swf
+*.log
+.DS_Store
+Thumbs.db
