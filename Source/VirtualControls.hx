@@ -24,9 +24,9 @@ private class VirtualButton extends Sprite {
 		label.width = radius * 2;
 		label.height = radius;
 		label.x = -radius;
-		label.y = -radius / 2;
+		label.y = -radius / 2 - 10;
 		label.selectable = false;
-		var fmt = new TextFormat("Consolas", 16, 0xffffff, true);
+		var fmt = new TextFormat("Consolas", 32, 0xffffff, true);
 		fmt.align = TextFormatAlign.CENTER;
 		label.defaultTextFormat = fmt;
 		label.text = text;
@@ -40,7 +40,7 @@ private class VirtualButton extends Sprite {
 		graphics.beginFill(0x00e5ff, alpha);
 		graphics.drawCircle(0, 0, radius);
 		graphics.endFill();
-		graphics.lineStyle(2, 0x00e5ff, pressed ? 0.9 : 0.5);
+		graphics.lineStyle(3, 0x00e5ff, pressed ? 0.9 : 0.5);
 		graphics.drawCircle(0, 0, radius);
 	}
 }
@@ -66,20 +66,21 @@ class VirtualControls extends Sprite {
 	}
 
 	private function createControls():Void {
-		// 左侧方向键
-		var cx = 110;
-		var cy = 800;
-		buttons.push(new VirtualButton(cx, cy - 65, 48, "↑", "up"));
-		buttons.push(new VirtualButton(cx, cy + 65, 48, "↓", "down"));
-		buttons.push(new VirtualButton(cx - 65, cy, 48, "←", "left"));
-		buttons.push(new VirtualButton(cx + 65, cy, 48, "→", "right"));
+		// 左侧方向键 - 放大
+		var cx = 180;
+		var cy = 820;
+		var r = 80;
+		buttons.push(new VirtualButton(cx, cy - r - 20, r, "↑", "up"));
+		buttons.push(new VirtualButton(cx, cy + r + 20, r, "↓", "down"));
+		buttons.push(new VirtualButton(cx - r - 20, cy, r, "←", "left"));
+		buttons.push(new VirtualButton(cx + r + 20, cy, r, "→", "right"));
 
 		// 右侧 N / M 大键
-		buttons.push(new VirtualButton(770, 810, 62, "N", "n"));
-		buttons.push(new VirtualButton(880, 810, 62, "M", "m"));
+		buttons.push(new VirtualButton(1550, 850, 100, "N", "n"));
+		buttons.push(new VirtualButton(1750, 850, 100, "M", "m"));
 
 		// Shift 加速键
-		buttons.push(new VirtualButton(700, 700, 42, "SH", "shift"));
+		buttons.push(new VirtualButton(1400, 650, 65, "SHIFT", "shift"));
 
 		for (b in buttons) addChild(b);
 	}
