@@ -635,7 +635,7 @@ var gHeld:Bool = false;
 		if (closeBrPress) { bpm += 5; beatInterval = 60000 / bpm; }
 
 		// 时间步进 , .
-		if (commaPress) editorTime = Math.max(0, editorTime - Std.int(beatInterval / 4));
+		if (commaPress) editorTime = Std.int(Math.max(0, editorTime - beatInterval / 4));
 		if (periodPress) editorTime += Std.int(beatInterval / 4);
 
 		// 停止音乐 G
