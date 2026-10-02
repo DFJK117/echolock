@@ -95,6 +95,10 @@ var prevG:Bool;
 	// ===== 虚拟按键 =====
 	var vControls:VirtualControls;
 	var isMobile:Bool;
+	var music:Sound;
+	var musicChannel:SoundChannel;
+	var fileRef:FileReference;
+	var musicName:String;
 
 	public function new() {
 		super();
@@ -426,7 +430,9 @@ var gHeld:Bool = false;
 				editorInfo.visible = true;
 
 				updateEditor(dt, nPress || mPress, spacePress, rPress, escPress,
-					onePress, twoPress, threePress, fourPress);
+					onePress, twoPress, threePress, fourPress,
+					commaPress, periodPress, openBrPress, closeBrPress,
+					oPress, pPress, lPress, gPress);
 		}
 
 		// 更新粒子（所有状态通用）
@@ -844,7 +850,8 @@ var gHeld:Bool = false;
 		beatInterval = 60000 / bpm;
 		musicName = data.music;
 		editorNotes = [];
-		for (n in data.notes) {
+		var notesData:Array<Dynamic> = data.notes;
+		for (n in notesData) {
 			editorNotes.push(new Note(Std.int(n.time), n.angle, n.dist, Std.int(n.key)));
 		}
 		editorNotes.sort(function(a, b) return a.time - b.time);
